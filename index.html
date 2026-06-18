@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hey! I have a question...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #ffe5ec 0%, #ffb3c6 100%);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Floating Hearts Background Effect */
+        .heart-particle {
+            position: absolute;
+            pointer-events: none;
+            background: rgba(255, 75, 110, 0.6);
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            transform: rotate(-45deg);
+            animation: floatUp 6s linear infinite;
+            bottom: -50px;
+        }
+
+        .heart-particle::before,
+        .heart-particle::after {
+            content: "";
+            background: inherit;
+            border-radius: 50%;
+            position: absolute;
+            width: 20px;
+            height: 20px;
+        }
+
+        .heart-particle::before { top: -10px; left: 0; }
+        .heart-particle::after { left: 10px; top: 0; }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(-45deg) scale(0);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateY(-105vh) rotate(-45deg) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Main Card Container */
+        .card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(255, 75, 110, 0.2);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            z-index: 10;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Envelope / Reveal Animation */
+        .gif-container img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #ff4b6e;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        /* Interactive Buttons */
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+            height: 50px;
+        }
+
+        .btn {
+            padding: 12px 35px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #yesBtn {
+            background: #ff4b6e;
+            color: white;
+        }
+
+        #yesBtn:hover {
+            background: #ff2a53;
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(255, 75, 110, 0.4);
+        }
+
+        #noBtn {
+            background: #f0f0f0;
+            color: #555;
+            position: absolute;
+            right: 80px; /* Base positioning inside the flex row */
+        }
+
+        /* Success State */
+        .hidden {
+            display: none !important;
+        }
+
+        .celebration-hearts {
+            font-size: 3rem;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Card -->
+    <div class="card" id="mainCard">
+        <div class="gif-container">
+            <!-- Cute animated placeholder, feel free to change to any GIF -->
+        </div>
+        <h1 id="questionText">¿Quieres ir a una cita conmigo? ✨</h1>
+        <p id="subText">La pasaremos increíble, lo prometo. ¡Será súper divertido! 😄</p>
+        <div class="btn-group">
+            <button class="btn" id="yesBtn">¡Sí! ☕</button>
+            <button class="btn" id="noBtn">No 😢</button>
+        </div>
+    </div>
+
+    <!-- Success Screen (Hidden by default) -->
+    <div class="card hidden" id="successCard">
+        <div class="celebration-hearts">💖🎉✨</div>
+        <h1 style="margin-top: 15px;">¡Sí! 🥰</h1>
+        <p>¡Feliz de que hayas dicho sí! 🎉</p>
+    </div>
+
+    <script>
+        // --- 1. Background Heart Generator ---
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-particle');
+            
+            // Randomize position, size, and speed
+            heart.style.left = Math.random() * 100 + 'vw';
+            const size = Math.random() * 15 + 10;
+            heart.style.width = `${size}px`;
+            heart.style.height = `${size}px`;
+            
+            // Randomize animation duration
+            heart.style.animationDuration = Math.random() * 3 + 4 + 's';
+            
+            document.body.appendChild(heart);
+            
+            // Clean up after animation finishes
+            setTimeout(() => {
+                heart.remove();
+            }, 7000);
+        }
+
+        // Keep generating hearts continuously
+        setInterval(createHeart, 300);
+
+        // --- 2. The "Runaway" No Button Logic ---
+        const noBtn = document.getElementById('noBtn');
+        const card = document.getElementById('mainCard');
+
+        noBtn.addEventListener('mouseover', () => {
+            // Get card dimensions so the button stays within or around the card boundaries safely
+            const cardRect = card.getBoundingClientRect();
+            
+            // Generate a random position away from the cursor
+            const padding = 20;
+            const minX = -100;
+            const maxX = cardRect.width - noBtn.offsetWidth + 100;
+            const minY = -100;
+            const maxY = cardRect.height - noBtn.offsetHeight + 100;
+
+            const randomX = Math.floor(Math.random() * (maxX - minX)) + minX;
+            const randomY = Math.floor(Math.random() * (maxY - minY)) + minY;
+
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+        });
+
+        // Extra trick: If they manage to tap it on mobile without hovering, run away on click too!
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+        });
+
+        // --- 3. Success Transition ---
+        const yesBtn = document.getElementById('yesBtn');
+        const mainCard = document.getElementById('mainCard');
+        const successCard = document.getElementById('successCard');
+
+        yesBtn.addEventListener('click', () => {
+            mainCard.classList.add('hidden');
+            successCard.classList.remove('hidden');
+            
+            // Increase heart rate dramatically for a celebration burst
+            const burstInterval = setInterval(createHeart, 50);
+            setTimeout(() => {
+                clearInterval(burstInterval);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
